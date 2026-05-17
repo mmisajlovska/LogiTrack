@@ -1,0 +1,197 @@
+{% extends 'warehouse/base.html' %}
+
+{% block title %}Dashboard - LogiTrack{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0">Dashboard</h1>
+        <a href="{% url 'warehouse:warehouse-create' %}" class="btn btn-primary">+ Create Warehouse</a>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-label">Total Stock</div>
+                <div class="stat-value">{{ total_stock }}</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-label">To Be Shipped</div>
+                <div class="stat-value">{{ to_be_shipped }}</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-label">Picked</div>
+                <div class="stat-value">{{ picked }}</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-label">Delivered</div>
+                <div class="stat-value">{{ delivered }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Warehouse Capacity -->
+    {% if warehouses %}
+    <div class="row mb-4">
+        {% for warehouse in warehouses %}
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span>{{ warehouse.name }} - Capacity</span>
+                        <div class="d-flex gap-2">
+                            <a href="{% url 'warehouse:warehouse-update' warehouse.pk %}" class="btn btn-sm btn-secondary">Edit</a>
+                            <form method="post" action="{% url 'warehouse:warehouse-delete' warehouse.pk %}" onsubmit="return confirm('Delete this warehouse?');" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="mb-2 d-flex justify-content-between">
+                        <span>{{ warehouse.used_capacity }} / {{ warehouse.total_capacity }} slots used</span>
+                        <span><strong>{{ warehouse.capacity_percentage }}%</strong></span>
+                    </div>
+                    <div class="progress" style="height: 1.25rem;">
+                        <div class="progress-bar" role="progressbar" 
+                             style="width: {{ warehouse.capacity_percentage }}%; background-color: {% if warehouse.capacity_percentage >= 80 %}#dc3545{% elif warehouse.capacity_percentage >= 50 %}#ffc107{% else %}#28a745{% endif %};"
+                             aria-valuenow="{{ warehouse.capacity_percentage }}" aria-valuemin="0" aria-valuemax="100">
+                            {{ warehouse.capacity_percentage }}%
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="d-flex justify-content-end mb-4">
+        <a href="{% url 'warehouse:slot-create' %}" class="btn btn-primary">+ Create Warehouse Slot</a>
+    </div>
+
+    <!-- Recent Orders -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    Recent Orders
+                    <a href="{% url 'warehouse:order-list' %}" class="btn btn-sm btn-primary">View All</a>
+                </div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Product</th>
+                            <th>Customer</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in recent_orders %}
+                        <tr>
+                            <td><a href="{% url 'warehouse:order-detail' order.pk %}">{{ order.order_id }}</a></td>
+                            <td>{{ order.product.name }}</td>
+                            <td>{{ order.customer_name }}</td>
+                            <td><span class="badge badge-{{ order.status }}">{{ order.get_status_display }}</span></td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center text-muted">No orders yet</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Low Stock Products -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    Low Stock Alerts
+                    <a href="{% url 'warehouse:product-list' %}" class="btn btn-sm btn-primary">View All</a>
+                </div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>SKU</th>
+                            <th>Quantity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for product in low_stock %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'warehouse:product-update' product.pk %}">{{ product.name }}</a>
+                            </td>
+                            <td>{{ product.sku }}</td>
+                            <td>
+                                {% if product.quantity < 5 %}
+                                    <span class="badge" style="background-color: #dc3545; color: white;">{{ product.quantity }}</span>
+                                {% else %}
+                                    <span class="badge" style="background-color: #ffc107; color: #333;">{{ product.quantity }}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="3" class="text-center text-muted">All products have sufficient stock</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upcoming Maintenance -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    Upcoming Maintenance Tasks
+                    <a href="{% url 'warehouse:maintenance-list' %}" class="btn btn-sm btn-primary">View All</a>
+                </div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Warehouse</th>
+                            <th>Due Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for task in upcoming_maintenance %}
+                        <tr>
+                            <td>{{ task.title }}</td>
+                            <td>{{ task.warehouse.name }}</td>
+                            <td>{{ task.due_date }}</td>
+                            <td><span class="badge badge-{{ task.status }}">{{ task.get_status_display }}</span></td>
+                            <td>
+                                <a href="{% url 'warehouse:maintenance-update' task.pk %}" class="btn btn-sm btn-secondary">Edit</a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center text-muted">No upcoming maintenance tasks</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

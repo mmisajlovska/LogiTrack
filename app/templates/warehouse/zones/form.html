@@ -1,0 +1,65 @@
+{% extends 'warehouse/base.html' %}
+
+{% block title %}{% if object %}Edit Zone{% else %}Create Zone{% endif %} - LogiTrack{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+            <div class="card">
+                <div class="card-header">{% if object %}Edit Zone: {{ object.name }}{% else %}Create New Zone{% endif %}</div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <div class="mb-3">
+                            <label for="{{ form.name.id_for_label }}" class="form-label">Name</label>
+                            {{ form.name }}
+                            {% if form.name.errors %}
+                                <div class="text-danger small mt-1">{{ form.name.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.zone_code.id_for_label }}" class="form-label">Zone Code</label>
+                            {{ form.zone_code }}
+                            {% if form.zone_code.errors %}
+                                <div class="text-danger small mt-1">{{ form.zone_code.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.warehouse.id_for_label }}" class="form-label">Warehouse</label>
+                            {{ form.warehouse }}
+                            {% if form.warehouse.errors %}
+                                <div class="text-danger small mt-1">{{ form.warehouse.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.category.id_for_label }}" class="form-label">Category</label>
+                            {{ form.category }}
+                            {% if form.category.errors %}
+                                <div class="text-danger small mt-1">{{ form.category.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.total_slots.id_for_label }}" class="form-label">Total Slots</label>
+                            {{ form.total_slots }}
+                            {% if form.total_slots.errors %}
+                                <div class="text-danger small mt-1">{{ form.total_slots.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="d-flex gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary">{% if object %}Update Zone{% else %}Create Zone{% endif %}</button>
+                            <a href="{% url 'warehouse:zone-list' %}" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

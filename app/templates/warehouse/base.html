@@ -1,0 +1,763 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}LogiTrack - Warehouse Management{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'bootstrap.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        :root {
+            --sidebar-bg: #1a1a2e;
+            --sidebar-active: #d4ed00;
+            --main-bg: #f4f6f9;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--main-bg);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .container-main {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 15.625rem;
+            background-color: var(--sidebar-bg);
+            color: white;
+            padding: 1.25rem 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            box-shadow: 0.125rem 0 0.5rem rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-brand {
+            padding: 0 1.25rem 1.875rem;
+            border-bottom: 0.0625rem solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 1.25rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--sidebar-active);
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-menu li {
+            margin: 0;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            padding: 0.9375rem 1.25rem;
+            color: #b0b0b0;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 0.9375rem;
+        }
+
+        .sidebar-menu a:hover {
+            color: var(--sidebar-active);
+            background-color: rgba(212, 237, 0, 0.05);
+            padding-left: 1.5625rem;
+        }
+
+        .sidebar-menu a.active {
+            color: var(--sidebar-active);
+            background-color: rgba(212, 237, 0, 0.1);
+            border-left: 0.25rem solid var(--sidebar-active);
+            padding-left: 1rem;
+        }
+
+        .sidebar-menu i {
+            margin-right: 0.9375rem;
+            width: 1.25rem;
+            text-align: center;
+        }
+
+        .content {
+            margin-left: 15.625rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .topbar {
+            background-color: white;
+            padding: 0.9375rem 1.875rem;
+            border-bottom: 0.0625rem solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.05);
+        }
+
+        .search-form {
+            flex: 1;
+            max-width: 25rem;
+        }
+
+        .search-form input {
+            border-radius: 0.25rem;
+            border: 0.0625rem solid #ddd;
+        }
+
+        .topbar-user {
+            display: flex;
+            align-items: center;
+            gap: 0.9375rem;
+            font-size: 0.875rem;
+            color: #666;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 1.875rem;
+            overflow-y: auto;
+        }
+
+        .alert-container {
+            margin-bottom: 1.25rem;
+        }
+
+        .alert {
+            border-radius: 0.25rem;
+            border: none;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border-left: 0.25rem solid #28a745;
+        }
+
+        .alert-error,
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border-left: 0.25rem solid #dc3545;
+        }
+
+        .alert-warning {
+            background-color: #fff3cd;
+            color: #856404;
+            border-left: 0.25rem solid #ffc107;
+        }
+
+        .alert-info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border-left: 0.25rem solid #17a2b8;
+        }
+
+        .badge {
+            border-radius: 0.75rem;
+            padding: 0.25rem 0.625rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-to_be_shipped {
+            background-color: #d4ed00;
+            color: #1a1a2e;
+            padding: 0.35rem 0.8rem;
+        }
+
+        .badge-picked {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .badge-packed {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .badge-sent {
+            background-color: #cfe2ff;
+            color: #084298;
+        }
+
+        .badge-delivered {
+            background-color: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .badge-returned {
+            background-color: #f8d7da;
+            color: #842029;
+        }
+
+        .badge-cancelled {
+            background-color: #e2e3e5;
+            color: #383d41;
+        }
+
+        .badge-unpaid {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .badge-upcoming {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .badge-done {
+            background-color: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .badge-overdue {
+            background-color: #f8d7da;
+            color: #842029;
+        }
+
+        .card {
+            border: none;
+            box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.08);
+            border-radius: 0.375rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .card-header {
+            background-color: #f8f9fa;
+            border-bottom: 0.0625rem solid #e0e0e0;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .table {
+            margin-bottom: 0;
+        }
+
+        .table thead th {
+            background-color: #f8f9fa;
+            border-bottom: 0.125rem solid #dee2e6;
+            font-weight: 600;
+            color: #333;
+            padding: 0.9375rem;
+        }
+
+        .table tbody td {
+            padding: 0.9375rem;
+            vertical-align: middle;
+            border-bottom: 0.0625rem solid #dee2e6;
+        }
+
+        .table tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.25rem;
+            border-radius: 0.375rem;
+            box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.08);
+            text-align: center;
+            margin-bottom: 1.25rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--sidebar-active);
+            margin: 0.625rem 0;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.03125rem;
+        }
+
+        .btn {
+            border-radius: 0.25rem;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background-color: var(--sidebar-active);
+            color: #1a1a2e;
+        }
+
+        .btn-primary:hover {
+            background-color: #c2e600;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+        .form-control,
+        .form-select {
+            border-radius: 0.25rem;
+            border: 0.0625rem solid #ddd;
+            padding: 0.625rem 0.75rem;
+            color: #1a1a2e;
+            background-color: #fff;
+        }
+
+        .form-select option {
+            color: #1a1a2e;
+            background-color: #fff;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: var(--sidebar-active);
+            box-shadow: 0 0 0 0.2rem rgba(212, 237, 0, 0.25);
+        }
+
+        .footer {
+            background-color: white;
+            padding: 1.25rem 1.875rem;
+            border-top: 0.0625rem solid #e0e0e0;
+            text-align: center;
+            color: #666;
+            font-size: 0.75rem;
+            margin-top: 2.5rem;
+        }
+
+        .tabs-nav {
+            display: flex;
+            gap: 0.625rem;
+            margin-bottom: 1.25rem;
+            border-bottom: 0.125rem solid #e0e0e0;
+            flex-wrap: wrap;
+        }
+
+        .tab-link {
+            padding: 0.625rem 1.25rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #666;
+            font-weight: 500;
+            border-bottom: 0.1875rem solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .tab-link.active {
+            color: var(--sidebar-active);
+            border-bottom-color: var(--sidebar-active);
+        }
+
+        .tab-link:hover {
+            color: #333;
+        }
+
+        .modal-header {
+            background-color: #f8f9fa;
+            border-bottom: 0.0625rem solid #dee2e6;
+        }
+
+        .modal-body {
+            padding: 1.25rem;
+        }
+
+        .grid-slots {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(2.5rem, 1fr));
+            gap: 0.5rem;
+            padding: 0.9375rem;
+        }
+
+        .slot {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 0.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.6875rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: 0.0625rem solid #ddd;
+            transition: all 0.2s ease;
+        }
+
+        .slot.free {
+            background-color: #d1e7dd;
+            color: #0f5132;
+            border-color: #badbcc;
+        }
+
+        .slot.free:hover {
+            box-shadow: 0 0 0.5rem rgba(15, 81, 50, 0.3);
+        }
+
+        .slot.occupied {
+            background-color: #f8d7da;
+            color: #842029;
+            border-color: #f1b0b7;
+        }
+
+        .slot.occupied:hover {
+            box-shadow: 0 0 0.5rem rgba(132, 32, 41, 0.3);
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 0.375rem;
+            overflow: hidden;
+            box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .product-card:hover {
+            box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.12);
+            transform: translateY(-0.125rem);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 12.5rem;
+            background-color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: #ccc;
+        }
+
+        .product-info {
+            padding: 0.9375rem;
+        }
+
+        .product-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.3125rem;
+        }
+
+        .product-sku {
+            font-size: 0.75rem;
+            color: #999;
+            margin-bottom: 0.5rem;
+        }
+
+        .product-meta {
+            font-size: 0.8125rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        .product-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.625rem;
+        }
+
+        .product-actions a,
+        .product-actions button {
+            flex: 1;
+            font-size: 0.75rem;
+            padding: 0.375rem 0.5rem;
+        }
+
+        .pagination {
+            margin-top: 1.875rem;
+            justify-content: center;
+        }
+
+        .page-link {
+            color: var(--sidebar-active);
+            border: 0.0625rem solid #ddd;
+            border-radius: 0.25rem;
+        }
+
+        .page-link:hover {
+            background-color: #f0f0f0;
+        }
+
+        .page-item.active .page-link {
+            background-color: var(--sidebar-active);
+            border-color: var(--sidebar-active);
+            color: #1a1a2e;
+        }
+
+        .timeline {
+            position: relative;
+            padding: 1.25rem 0;
+        }
+
+        .timeline-item {
+            display: flex;
+            margin-bottom: 1.25rem;
+            position: relative;
+            padding-left: 2.5rem;
+        }
+
+        .timeline-item:before {
+            content: '';
+            position: absolute;
+            left: 0.375rem;
+            top: 0;
+            width: 1.25rem;
+            height: 1.25rem;
+            background-color: var(--sidebar-active);
+            border-radius: 50%;
+            border: 0.1875rem solid white;
+            box-shadow: 0 0 0 0.0625rem #ddd;
+        }
+
+        .timeline-item:not(:last-child):after {
+            content: '';
+            position: absolute;
+            left: 0.9375rem;
+            top: 1.25rem;
+            width: 0.125rem;
+            height: calc(100% + 1.25rem);
+            background-color: #ddd;
+        }
+
+        .timeline-content {
+            background: white;
+            padding: 0.9375rem;
+            border-radius: 0.25rem;
+            border-left: 0.1875rem solid var(--sidebar-active);
+        }
+
+        .timeline-date {
+            font-size: 0.75rem;
+            color: #999;
+            margin-bottom: 0.25rem;
+        }
+
+        .timeline-status {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.25rem;
+        }
+
+        .timeline-note {
+            font-size: 0.8125rem;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-main">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">LogiTrack</div>
+            <ul class="sidebar-menu">
+                <li>
+                    <a href="{% url 'warehouse:dashboard' %}" class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+                        <span></span> Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'warehouse:order-list' %}" class="{% if 'order' in request.resolver_match.url_name %}active{% endif %}">
+                        <span></span> Orders
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'warehouse:storage-map' %}" class="{% if request.resolver_match.url_name == 'storage-map' %}active{% endif %}">
+                        <span></span> Storage Map
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'warehouse:product-list' %}" class="{% if 'product' in request.resolver_match.url_name %}active{% endif %}">
+                        <span></span> Products
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'warehouse:client-list' %}" class="{% if 'client' in request.resolver_match.url_name %}active{% endif %}">
+                        <span></span> Clients
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'warehouse:maintenance-list' %}" class="{% if 'maintenance' in request.resolver_match.url_name %}active{% endif %}">
+                        <span></span> Maintenance
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="content">
+            <!-- Topbar -->
+            <div class="topbar">
+                <form method="get" action="{% url 'warehouse:product-list' %}" class="search-form">
+                    <input type="text" name="search" class="form-control" placeholder="Search products...">
+                </form>
+                <div class="topbar-user">
+                    <span>{{ user.get_full_name|default:user.username }}</span>
+                </div>
+            </div>
+
+            <!-- Main Content Area -->
+            <main class="main-content">
+                <!-- Messages -->
+                {% if messages %}
+                <div class="alert-container">
+                    {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">
+                        {{ message }}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <!-- Page Content -->
+                {% block content %}{% endblock %}
+            </main>
+
+            <!-- Footer -->
+            <footer class="footer">
+                <p>&copy; 2026 LogiTrack - Warehouse Management System. All rights reserved.</p>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Bootstrap Modal for Slot Details -->
+    <div class="modal fade" id="slotModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Slot Details</h5>
+                    <button type="button" class="btn-close" onclick="closeSlotModal()" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="slotModalBody">
+                    <!-- Content will be filled via JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Helper to close the slot modal (works with or without Bootstrap JS)
+        function closeSlotModal() {
+            const modalElement = document.getElementById('slotModal');
+            if (!modalElement) return;
+            try {
+                if (window.bootstrap && bootstrap.Modal) {
+                    const instance = bootstrap.Modal.getInstance(modalElement);
+                    if (instance) {
+                        instance.hide();
+                    }
+                }
+            } catch (e) {
+                // ignore
+            }
+
+            modalElement.style.display = 'none';
+            modalElement.classList.remove('show');
+            modalElement.setAttribute('aria-hidden', 'true');
+            modalElement.removeAttribute('aria-modal');
+            modalElement.removeAttribute('role');
+        }
+
+        // Close modal on Escape key as a convenience
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeSlotModal();
+        });
+
+        // Handle slot click for storage map
+        document.querySelectorAll('.slot').forEach(slot => {
+            slot.addEventListener('click', function(e) {
+                e.preventDefault(); // Prevent any default navigation
+
+                const productId = this.dataset.productId;
+                const slotNumber = this.dataset.slotNumber;
+                const zoneName = this.dataset.zoneName;
+                const slotCapacity = this.dataset.slotCapacity;
+                const slotUsed = this.dataset.slotUsed;
+                const slotRemaining = this.dataset.slotRemaining;
+
+                if (productId) {
+                    fetch(`/api/product/${productId}/`)
+                        .then(r => r.json())
+                        .then(data => {
+                            document.getElementById('slotModalBody').innerHTML = `
+                                <p><strong>Product:</strong> ${data.name}</p>
+                                <p><strong>SKU:</strong> ${data.sku}</p>
+                                <p><strong>Quantity:</strong> ${data.quantity}</p>
+                                <p><strong>Client:</strong> ${data.client}</p>
+                                <p><strong>Slot:</strong> ${data.slot || slotNumber}</p>
+                                <p><strong>Zone:</strong> ${data.zone || zoneName}</p>
+                            `;
+                            const modalElement = document.getElementById('slotModal');
+                            if (window.bootstrap && bootstrap.Modal) {
+                                try {
+                                    const instance = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
+                                    instance.show();
+                                    return;
+                                } catch(err) {}
+                            }
+
+                            modalElement.style.display = 'block';
+                            modalElement.classList.add('show');
+                            modalElement.removeAttribute('aria-hidden');
+                            modalElement.setAttribute('aria-modal', 'true');
+                            modalElement.setAttribute('role', 'dialog');
+                            // close when clicking the backdrop area
+                            modalElement.addEventListener('click', function(ev) {
+                                if (ev.target === modalElement) closeSlotModal();
+                            });
+                        })
+                        .catch(err => console.error(err));
+                } else {
+                    document.getElementById('slotModalBody').innerHTML = `
+                        <p><strong>Slot:</strong> ${slotNumber || 'N/A'}</p>
+                        <p><strong>Zone:</strong> ${zoneName || 'N/A'}</p>
+                        <p><strong>Capacity:</strong> ${slotCapacity || 'N/A'}</p>
+                        <p><strong>Used:</strong> ${slotUsed || '0'}</p>
+                        <p><strong>Remaining:</strong> ${slotRemaining || '0'}</p>
+                    `;
+                    const modalElement = document.getElementById('slotModal');
+                    if (window.bootstrap && bootstrap.Modal) {
+                        try {
+                            const instance = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
+                            instance.show();
+                            return;
+                        } catch(err) {}
+                    }
+
+                    modalElement.style.display = 'block';
+                    modalElement.classList.add('show');
+                    modalElement.removeAttribute('aria-hidden');
+                    modalElement.setAttribute('aria-modal', 'true');
+                    modalElement.setAttribute('role', 'dialog');
+                    modalElement.addEventListener('click', function(ev) {
+                        if (ev.target === modalElement) closeSlotModal();
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

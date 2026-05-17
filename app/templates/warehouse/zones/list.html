@@ -1,0 +1,69 @@
+{% extends 'warehouse/base.html' %}
+
+{% block title %}Zones - LogiTrack{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0">Storage Zones</h1>
+        <div class="d-flex gap-2 flex-wrap justify-content-end">
+            <a href="{% url 'warehouse:storage-map' %}" class="btn btn-secondary">Storage Map</a>
+            <a href="{% url 'warehouse:zone-create' %}" class="btn btn-primary">+ Create Zone</a>
+        </div>
+    </div>
+
+    <div class="card">
+        <table class="table align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Code</th>
+                    <th>Warehouse</th>
+                    <th>Category</th>
+                    <th>Total Slots</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for zone in zones %}
+                <tr>
+                    <td>{{ zone.name }}</td>
+                    <td>{{ zone.zone_code }}</td>
+                    <td>{{ zone.warehouse.name }}</td>
+                    <td>{{ zone.get_category_display }}</td>
+                    <td>{{ zone.total_slots }}</td>
+                    <td>
+                        <a href="{% url 'warehouse:zone-detail' zone.pk %}" class="btn btn-sm btn-primary">Slots</a>
+                        <a href="{% url 'warehouse:zone-update' zone.pk %}" class="btn btn-sm btn-secondary">Edit</a>
+                        <form method="post" action="{% url 'warehouse:zone-delete' zone.pk %}" style="display: inline;" onsubmit="return confirm('Delete this zone? Only empty zones can be deleted.');">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center text-muted">No storage zones found</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if is_paginated %}
+    <nav style="margin-top: 1.25rem;">
+        <ul class="pagination">
+            {% if page_obj.has_previous %}
+                <li class="page-item"><a class="page-link" href="?page=1">First</a></li>
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
+            {% endif %}
+            <li class="page-item active"><span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span></li>
+            {% if page_obj.has_next %}
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}

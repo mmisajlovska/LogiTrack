@@ -1,0 +1,116 @@
+{% extends 'warehouse/base.html' %}
+
+{% block title %}Products - LogiTrack{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Products</h1>
+        <a href="{% url 'warehouse:product-create' %}" class="btn btn-primary">+ New Product</a>
+    </div>
+
+    <!-- Search Form -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="d-flex gap-2">
+                {{ search_form.search }}
+                <button type="submit" class="btn btn-primary">Search</button>
+                {% if search_query %}
+                <a href="{% url 'warehouse:product-list' %}" class="btn btn-secondary">Clear</a>
+                {% endif %}
+            </form>
+            {% if search_query %}
+            <p class="text-muted mt-2">Showing results for: <strong>{{ search_query }}</strong></p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Products Grid -->
+    <div class="row">
+        {% for product in products %}
+        <div class="col-lg-4 col-md-6">
+            <div class="product-card">
+                <div class="product-image">
+                    {% if product.image %}
+                        <img src="{{ product.image.url }}" alt="{{ product.name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                    {% else %}
+                        📦
+                    {% endif %}
+                </div>
+                <div class="product-info">
+                    <div class="product-name">{{ product.name }}</div>
+                    <div class="product-sku">SKU: {{ product.sku }}</div>
+                    <div class="product-meta">
+                        <p style="margin: 0; font-size: 12px;">
+                            <strong>Client:</strong> {{ product.client.name }}
+                        </p>
+                        <p style="margin: 5px 0 0 0; font-size: 12px;">
+                            <strong>Quantity:</strong> 
+                            {% if product.quantity < 10 %}
+                                <span style="color: #dc3545;">{{ product.quantity }}</span>
+                            {% else %}
+                                {{ product.quantity }}
+                            {% endif %}
+                        </p>
+                        <p style="margin: 5px 0 0 0; font-size: 12px;">
+                            <strong>Rent Type:</strong> {{ product.get_rent_type_display }}
+                        </p>
+                        {% if product.warehouse_slot %}
+                        <p style="margin: 5px 0 0 0; font-size: 12px;">
+                            <strong>Location:</strong> {{ product.warehouse_slot.zone.name }} - Slot {{ product.warehouse_slot.slot_number }}
+                        </p>
+                        {% else %}
+                        <p style="margin: 5px 0 0 0; font-size: 12px;">
+                            <strong>Location:</strong> <span style="color: #999;">Not assigned</span>
+                        </p>
+                        {% endif %}
+                    </div>
+                    <div class="product-actions">
+                        <a href="{% url 'warehouse:product-update' product.pk %}" class="btn btn-secondary">Edit</a>
+                        <form method="post" action="{% url 'warehouse:product-delete' product.pk %}" style="flex: 1;" onsubmit="return confirm('Delete this product?');">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger" style="width: 100%;">Delete</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info" role="alert">
+                No products found. <a href="{% url 'warehouse:product-create' %}">Create one now</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if is_paginated %}
+    <nav style="margin-top: 40px;">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}">First</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}">Previous</a>
+                </li>
+            {% endif %}
+
+            <li class="page-item active">
+                <span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+            </li>
+
+            {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}">Next</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if search_query %}&search={{ search_query }}{% endif %}">Last</a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}
