@@ -85,3 +85,6 @@ env/
 venv/
 ENV/
 env.bak/
+
+
+.gunicorn/
