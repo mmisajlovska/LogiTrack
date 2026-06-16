@@ -19,8 +19,10 @@ from django.urls import path, include
 from warehouse_project import settings
 from django.conf.urls.static import static
 from app import views
+from django.views.generic import RedirectView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('warehouse/', include('app.urls')),
+    path('', RedirectView.as_view(url='admin/', permanent=False)),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
