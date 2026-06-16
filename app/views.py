@@ -24,7 +24,7 @@ def sync_slot_occupied_status(slot):
 	slot.save(update_fields=['is_occupied'])
 
 
-@method_decorator(login_required, name='dispatch')
+# @method_decorator(login_required, name='dispatch')
 class DashboardView(View):
 	"""Dashboard showing key warehouse statistics and recent activity"""
     
@@ -67,7 +67,7 @@ class DashboardView(View):
 		return render(request, 'warehouse/dashboard.html', context)
 
 
-@method_decorator(login_required, name='dispatch')
+# @method_decorator(login_required, name='dispatch')
 class OrderListView(ListView):
 	"""List all orders with filtering by status"""
 	model = Order
@@ -99,7 +99,7 @@ class OrderListView(ListView):
 		return context
 
 
-@method_decorator(login_required, name='dispatch')
+# @method_decorator(login_required, name='dispatch')
 class OrderDetailView(DetailView):
 	"""View order details with shipment log history"""
 	model = Order
@@ -113,7 +113,7 @@ class OrderDetailView(DetailView):
 		return context
 
 
-@method_decorator(login_required, name='dispatch')
+# @method_decorator(login_required, name='dispatch')
 class OrderCreateView(CreateView):
 	"""Create a new order"""
 	model = Order
@@ -138,7 +138,7 @@ class OrderCreateView(CreateView):
 		return redirect(self.get_success_url())
 
 
-@method_decorator(login_required, name='dispatch')
+# @method_decorator(login_required, name='dispatch')
 class OrderUpdateView(UpdateView):
 	"""Update an existing order"""
 	model = Order
@@ -180,7 +180,7 @@ class OrderUpdateView(UpdateView):
 		return redirect(self.get_success_url())
 
 
-@method_decorator(login_required, name='dispatch')
+# @method_decorator(login_required, name='dispatch')
 class OrderStatusUpdateView(View):
 	"""Quick update order status via AJAX or form"""
     
@@ -209,7 +209,7 @@ class OrderStatusUpdateView(View):
 		return redirect('warehouse:order-detail', pk=order.pk)
 
 
-@method_decorator(login_required, name='dispatch')
+# @method_decorator(login_required, name='dispatch')
 class StorageMapView(View):
 	"""Display storage zones and warehouse slots in a grid layout"""
     
@@ -240,7 +240,7 @@ class StorageMapView(View):
 		return render(request, 'warehouse/storage/map.html', context)
 
 
-@method_decorator(login_required, name='dispatch')
+# @method_decorator(login_required, name='dispatch')
 class StorageZoneDetailView(DetailView):
 	"""Show all slots for a single zone"""
 	model = StorageZone
@@ -253,7 +253,7 @@ class StorageZoneDetailView(DetailView):
 		return context
 
 
-@method_decorator(login_required, name='dispatch')
+# @method_decorator(login_required, name='dispatch')
 class WarehouseSlotDetailView(DetailView):
 	"""Show details for a single warehouse slot"""
 	model = WarehouseSlot
@@ -269,7 +269,7 @@ class WarehouseSlotDetailView(DetailView):
 		return context
 
 
-@method_decorator(login_required, name='dispatch')
+# @method_decorator(login_required, name='dispatch')
 class StorageZoneListView(ListView):
 	"""List all storage zones"""
 	model = StorageZone
@@ -282,7 +282,7 @@ class StorageZoneListView(ListView):
 		return StorageZone.objects.select_related('warehouse').all().order_by('warehouse__name', 'name')
 
 
-@method_decorator(login_required, name='dispatch')
+# @method_decorator(login_required, name='dispatch')
 class StorageZoneCreateView(CreateView):
 	"""Create a new storage zone"""
 	model = StorageZone
@@ -296,7 +296,7 @@ class StorageZoneCreateView(CreateView):
 		return response
 
 
-@method_decorator(login_required, name='dispatch')
+# @method_decorator(login_required, name='dispatch')
 class StorageZoneUpdateView(UpdateView):
 	"""Update an existing storage zone"""
 	model = StorageZone
@@ -310,7 +310,7 @@ class StorageZoneUpdateView(UpdateView):
 		return response
 
 
-@method_decorator(login_required, name='dispatch')
+# @method_decorator(login_required, name='dispatch')
 class WarehouseSlotUpdateView(UpdateView):
 	"""Update an existing warehouse slot"""
 	model = WarehouseSlot
@@ -327,7 +327,7 @@ class WarehouseSlotUpdateView(UpdateView):
 		return response
 
 
-@method_decorator(login_required, name='dispatch')
+# @method_decorator(login_required, name='dispatch')
 class StorageZoneDeleteView(View):
 	"""Delete a storage zone when it is empty"""
 
@@ -343,7 +343,7 @@ class StorageZoneDeleteView(View):
 		return redirect('warehouse:zone-list')
 
 
-@method_decorator(login_required, name='dispatch')
+# @method_decorator(login_required, name='dispatch')
 class WarehouseCreateView(CreateView):
 	"""Create a new warehouse"""
 	model = Warehouse
@@ -357,7 +357,7 @@ class WarehouseCreateView(CreateView):
 		return response
 
 
-@method_decorator(login_required, name='dispatch')
+# @method_decorator(login_required, name='dispatch')
 class WarehouseUpdateView(UpdateView):
 	"""Update an existing warehouse"""
 	model = Warehouse
@@ -371,7 +371,7 @@ class WarehouseUpdateView(UpdateView):
 		return response
 
 
-@method_decorator(login_required, name='dispatch')
+# @method_decorator(login_required, name='dispatch')
 class WarehouseDeleteView(View):
 	"""Delete a warehouse"""
 
@@ -383,7 +383,7 @@ class WarehouseDeleteView(View):
 		return redirect('warehouse:dashboard')
 
 
-@method_decorator(login_required, name='dispatch')
+# @method_decorator(login_required, name='dispatch')
 class WarehouseSlotCreateView(CreateView):
 	"""Create a new warehouse slot"""
 	model = WarehouseSlot
@@ -399,7 +399,7 @@ class WarehouseSlotCreateView(CreateView):
 		return response
 
 
-@method_decorator(login_required, name='dispatch')
+# @method_decorator(login_required, name='dispatch')
 class ProductDetailApiView(View):
 	"""Return product details for the storage-map modal"""
 
@@ -416,7 +416,7 @@ class ProductDetailApiView(View):
 		})
 
 
-@method_decorator(login_required, name='dispatch')
+# @method_decorator(login_required, name='dispatch')
 class ProductListView(ListView):
 	"""List all products with search capability"""
 	model = Product
@@ -440,7 +440,7 @@ class ProductListView(ListView):
 		return context
 
 
-@method_decorator(login_required, name='dispatch')
+# @method_decorator(login_required, name='dispatch')
 class ProductCreateView(CreateView):
 	"""Create a new product"""
 	model = Product
@@ -460,7 +460,7 @@ class ProductCreateView(CreateView):
 		return response
 
 
-@method_decorator(login_required, name='dispatch')
+# @method_decorator(login_required, name='dispatch')
 class ProductUpdateView(UpdateView):
 	"""Update an existing product"""
 	model = Product
@@ -480,7 +480,7 @@ class ProductUpdateView(UpdateView):
 		return response
 
 
-@method_decorator(login_required, name='dispatch')
+# @method_decorator(login_required, name='dispatch')
 class ProductDeleteView(View):
 	"""Delete a product"""
     
@@ -494,7 +494,7 @@ class ProductDeleteView(View):
 		return redirect('warehouse:product-list')
 
 
-@method_decorator(login_required, name='dispatch')
+# @method_decorator(login_required, name='dispatch')
 class ClientListView(ListView):
 	"""List all clients"""
 	model = Client
@@ -504,7 +504,7 @@ class ClientListView(ListView):
 	ordering = ['name']
 
 
-@method_decorator(login_required, name='dispatch')
+# @method_decorator(login_required, name='dispatch')
 class ClientCreateView(CreateView):
 	"""Create a new client"""
 	model = Client
@@ -518,7 +518,7 @@ class ClientCreateView(CreateView):
 		return response
 
 
-@method_decorator(login_required, name='dispatch')
+# @method_decorator(login_required, name='dispatch')
 class ClientUpdateView(UpdateView):
 	"""Update an existing client"""
 	model = Client
@@ -532,7 +532,7 @@ class ClientUpdateView(UpdateView):
 		return response
 
 
-@method_decorator(login_required, name='dispatch')
+# @method_decorator(login_required, name='dispatch')
 class ClientDeleteView(View):
 	"""Delete a client"""
     
@@ -544,7 +544,7 @@ class ClientDeleteView(View):
 		return redirect('warehouse:client-list')
 
 
-@method_decorator(login_required, name='dispatch')
+# @method_decorator(login_required, name='dispatch')
 class MaintenanceListView(ListView):
 	"""List all maintenance tasks"""
 	model = MaintenanceTask
@@ -554,7 +554,7 @@ class MaintenanceListView(ListView):
 	ordering = ['-due_date']
 
 
-@method_decorator(login_required, name='dispatch')
+# @method_decorator(login_required, name='dispatch')
 class MaintenanceCreateView(CreateView):
 	"""Create a new maintenance task"""
 	model = MaintenanceTask
@@ -568,7 +568,7 @@ class MaintenanceCreateView(CreateView):
 		return response
 
 
-@method_decorator(login_required, name='dispatch')
+# @method_decorator(login_required, name='dispatch')
 class MaintenanceUpdateView(UpdateView):
 	"""Update an existing maintenance task"""
 	model = MaintenanceTask
