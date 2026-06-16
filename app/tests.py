@@ -1,5 +1,4 @@
 from django.test import TestCase
-
 from .models import StorageZone, Warehouse, WarehouseSlot
 
 
