@@ -88,3 +88,4 @@ env.bak/
 
 
 .gunicorn/
+k8s/secret.yaml

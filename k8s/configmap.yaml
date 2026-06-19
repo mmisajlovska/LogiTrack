@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: logitrack-config
+  namespace: logitrack
+  labels:
+    app.kubernetes.io/name: logitrack
+    app.kubernetes.io/component: backend
+data:
+  DB_HOST: "postgres-service"
+  DB_PORT: "5432"
+  DB_NAME: logitrack
+  APP_ENV: production

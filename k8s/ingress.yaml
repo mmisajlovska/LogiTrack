@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: logitrack
+  namespace: logitrack
+  labels:
+    app.kubernetes.io/name: logitrack
+    app.kubernetes.io/component: backend
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: localhost
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: logitrack
+                port:
+                  name: http
