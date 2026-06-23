@@ -7,7 +7,10 @@ metadata:
     app.kubernetes.io/name: logitrack
     app.kubernetes.io/component: backend
 data:
-  DB_HOST: "postgres-service"
+  # DB_HOST: "postgres-service"
+  DB_HOST: "pg-ha-cluster-rw"
   DB_PORT: "5432"
-  DB_NAME: logitrack
+  # DB_NAME: logitrack
+  DB_NAME: app_db
   APP_ENV: production
+  

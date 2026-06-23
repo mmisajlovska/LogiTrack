@@ -8,6 +8,14 @@ metadata:
     app.kubernetes.io/component: backend
 spec:
   replicas: 3
+  revisionHistoryLimit: 5
+  progressDeadlineSeconds: 600
+  minReadySeconds: 15
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 2
   selector:
     matchLabels:
       app.kubernetes.io/name: logitrack

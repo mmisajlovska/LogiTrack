@@ -1,0 +1,26 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: pg-ha-cluster
+  namespace: logitrack 
+spec:
+  instances: 3
+
+  imageName: ghcr.io/cloudnative-pg/postgresql:15
+
+  bootstrap:
+    initdb:
+      database: app_db
+      owner: app_user
+
+  storage:
+    size: 10Gi
+    storageClass: hostpath  
+
+  resources:
+    requests:
+      memory: "128Mi" 
+      cpu: "100m"
+    limits:
+      memory: "256Mi"
+      cpu: "500m"
